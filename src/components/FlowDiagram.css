@@ -1,0 +1,469 @@
+/* A flow of selectable nodes. Used by the hero pipeline and the DineFlow project. */
+
+/* The diagram lays itself out by the width of this box, not the screen. */
+.flow-container {
+  container: flow / inline-size;
+}
+
+.flow {
+  --edge: 1.25rem; /* space between two nodes, where the connector is drawn */
+  --edge-color: var(--line-strong);
+}
+
+.flow-nodes {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  column-gap: var(--edge);
+  row-gap: 1.5rem;
+}
+
+.flow-item {
+  position: relative;
+  grid-column: var(--col);
+  grid-row: var(--row);
+}
+
+/* Connector into each node: a line with an arrowhead. */
+.flow-item::before,
+.flow-item::after,
+.flow-tasks > li + li::before,
+.flow-tasks > li + li::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.flow-item::before,
+.flow-tasks > li + li::before {
+  top: 50%;
+  left: calc(-1 * var(--edge) + 3px);
+  width: calc(var(--edge) - 12px);
+  height: 2px;
+  margin-top: -1px;
+  background: var(--edge-color);
+}
+
+.flow-item::after,
+.flow-tasks > li + li::after {
+  top: 50%;
+  left: -11px;
+  margin-top: -5px;
+  border-block: 5px solid transparent;
+  border-left: 7px solid var(--edge-color);
+}
+
+.flow-item[data-first="true"]::before,
+.flow-item[data-first="true"]::after {
+  content: none;
+}
+
+/* A branch hangs below its parent, joined by a vertical connector. */
+.flow-item[data-branch="true"]::before {
+  top: calc(-1.5rem + 3px);
+  left: 1.5rem;
+  width: 2px;
+  height: calc(1.5rem - 12px);
+  margin: 0;
+}
+
+.flow-item[data-branch="true"]::after {
+  top: -11px;
+  left: calc(1.5rem - 4px);
+  margin: 0;
+  border-inline: 5px solid transparent;
+  border-block: 0;
+  border-top: 7px solid var(--edge-color);
+}
+
+.flow-item[data-status="running"] {
+  --edge-color: var(--blue);
+}
+
+/* ------------------------------------------------------------------- node */
+
+.node {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-content: center;
+  row-gap: 0.125rem;
+  width: 100%;
+  height: 100%;
+  min-height: 4.25rem;
+  padding: 0.75rem 0.875rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-m);
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.node:hover {
+  border-color: var(--ink-soft);
+}
+
+.node[aria-pressed="true"] {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+  background: var(--paper);
+}
+
+/* Nodes with a run status: marker on the left. */
+.node[data-marker="status"] {
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 0.625rem;
+}
+
+.node[data-marker="status"] .node-label {
+  grid-column: 2;
+}
+
+.node-status {
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--queued);
+  border-radius: 50%;
+  color: var(--surface);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.node-status svg {
+  stroke-width: 3.2;
+}
+
+.flow-item[data-status="running"] .node-status {
+  border-color: var(--blue-wash);
+  border-top-color: var(--blue);
+  animation: node-spin 0.7s linear infinite;
+}
+
+.flow-item[data-status="success"] .node-status {
+  border-color: var(--green);
+  background: var(--green);
+}
+
+/* Plain nodes: a coloured strip along the top; medallion layers get their metal. */
+.node[data-marker="plain"] {
+  padding: 0.875rem 0.75rem 0.75rem;
+  overflow: hidden;
+}
+
+.node[data-marker="plain"]::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: var(--tone, var(--line-strong));
+}
+
+.flow-item[data-tone="bronze"] { --tone: var(--bronze); }
+.flow-item[data-tone="silver"] { --tone: var(--silver); }
+.flow-item[data-tone="gold"] { --tone: var(--gold); }
+
+.node-name {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.node-label {
+  font-size: var(--text-xs);
+  color: var(--muted);
+  line-height: 1.3;
+}
+
+.node-label[data-code="true"] {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  overflow-wrap: anywhere;
+}
+
+.node-aside {
+  display: none;
+}
+
+@keyframes node-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ------------------------------------------------- groups and task bars */
+
+.flow-spans {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  column-gap: var(--edge);
+}
+
+.flow-spans > li {
+  position: relative;
+  grid-column: var(--from) / var(--to);
+  min-width: 0;
+}
+
+/* A bracket over the nodes that live in the same system. */
+.flow-groups {
+  margin-bottom: 0.5rem;
+}
+
+.flow-groups > li {
+  padding: 0.25rem 0.75rem 0.5rem;
+  border: 1.5px dashed var(--line-strong);
+  border-bottom: 0;
+  border-radius: var(--radius-m) var(--radius-m) 0 0;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.flow-tasks-block {
+  margin-top: 1.5rem;
+}
+
+.flow-tasks-caption {
+  margin-bottom: 0.625rem;
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+
+.flow-tasks > li {
+  display: grid;
+  gap: 0.125rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-m);
+  background: var(--blue-wash);
+}
+
+.flow-task-id {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.flow-task-caption {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+  line-height: 1.3;
+}
+
+/* ----------------------------------------------------------- detail panel */
+
+.flow-detail {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.flow-detail-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem 2.5rem;
+  min-height: 8rem;
+}
+
+.flow-detail-name {
+  font-size: var(--text-lg);
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+
+.flow-detail-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+
+.flow-detail-strong {
+  color: var(--ink);
+}
+
+.flow-detail-line {
+  margin-top: 0.875rem;
+}
+
+.flow-detail-line .flow-detail-label {
+  display: inline;
+  margin-right: 0.375rem;
+}
+
+.flow-detail code {
+  font-family: var(--font-mono);
+  font-size: 0.8125em;
+  color: var(--ink);
+}
+
+/* Hidden while the nodes run left to right; see the stacked layout below. */
+.flow-group-rail {
+  display: none;
+}
+
+/* ------------------------------- not enough room: nodes on a vertical rail */
+
+@container flow (width < 61rem) {
+  .flow-nodes {
+    grid-template-columns: 1fr;
+    row-gap: 0.625rem;
+    padding-left: 1.5rem;
+  }
+
+  .flow-nodes[data-has-groups="true"] {
+    padding-right: 2rem;
+  }
+
+  /* The rail that every node hangs from. */
+  .flow-nodes::before {
+    content: "";
+    position: absolute;
+    left: 0.4375rem;
+    top: 2.125rem;
+    bottom: 2.125rem;
+    width: 2px;
+    background: var(--line-strong);
+  }
+
+  .flow-item {
+    grid-column: 1;
+    grid-row: var(--order);
+  }
+
+  .flow-item[data-branch="true"] {
+    margin-left: 1.5rem;
+  }
+
+  /* Tick from the rail to the node (arrowheads are dropped here). */
+  .flow-item::before,
+  .flow-item[data-first="true"]::before,
+  .flow-item[data-branch="true"]::before {
+    content: "";
+    top: 50%;
+    left: calc(-1.5rem + 0.4375rem);
+    width: calc(1.5rem - 0.4375rem);
+    height: 2px;
+    margin: -1px 0 0;
+    background: var(--edge-color);
+  }
+
+  .flow-item[data-branch="true"]::before {
+    left: calc(-3rem + 0.4375rem);
+    width: calc(3rem - 0.4375rem);
+  }
+
+  .flow-item::after,
+  .flow-item[data-branch="true"]::after {
+    content: none;
+  }
+
+  .node {
+    min-height: 3.5rem;
+  }
+
+  /* Group brackets and task bars need the columns; their information moves to the side. */
+  .flow-spans,
+  .flow-tasks-block {
+    display: none;
+  }
+
+  /* A group becomes a bracket down the right-hand side of its nodes. */
+  .flow-group-rail {
+    display: grid;
+    place-items: center;
+    grid-column: 1;
+    grid-row: var(--from-order) / calc(var(--to-order) + 1);
+    justify-self: end;
+    width: 1.375rem;
+    margin-right: -2rem;
+    border: 1.5px dashed var(--line-strong);
+    border-left: 0;
+    border-radius: 0 var(--radius-m) var(--radius-m) 0;
+    pointer-events: none;
+  }
+
+  .flow-group-rail span {
+    writing-mode: vertical-rl;
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+
+  .node[data-marker="plain"] {
+    grid-template-columns: 1fr auto;
+    column-gap: 0.75rem;
+    padding-left: 1rem;
+  }
+
+  .node[data-marker="plain"]::before {
+    inset: 0 auto 0 0;
+    width: 4px;
+    height: auto;
+  }
+
+  .node[data-marker="plain"] .node-name,
+  .node[data-marker="plain"] .node-label {
+    grid-column: 1;
+  }
+
+  .node-aside {
+    display: block;
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--muted);
+  }
+
+  .flow-detail-columns {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+}
+
+/* Medium room: nodes on the left, the selected node's detail on the right. */
+@container flow (30rem <= width < 61rem) {
+  .flow-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 17rem) minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .flow-detail {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+}
+
+/* A little tight: narrower rail, and the task names live in the detail only. */
+@container flow (30rem <= width < 34rem) {
+  .flow-layout {
+    grid-template-columns: minmax(0, 14.5rem) minmax(0, 1fr);
+  }
+
+  .node-aside {
+    display: none;
+  }
+}
+
+/* Roomier connectors when there is plenty of width, unless the flow has many nodes. */
+@container flow (width >= 68rem) {
+  .flow:not([data-dense="true"]) {
+    --edge: 2.25rem;
+  }
+}

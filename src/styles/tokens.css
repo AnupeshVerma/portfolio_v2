@@ -1,0 +1,95 @@
+/* Design tokens. Change a value here and it updates everywhere. */
+
+@font-face {
+  font-family: "Poppins";
+  src: url("../assets/fonts/poppins-400.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("../assets/fonts/poppins-500.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("../assets/fonts/poppins-700.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DejaVu Sans Mono";
+  src: url("../assets/fonts/dejavu-sans-mono-400.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Colour: cool paper, deep navy ink, and the three states of a pipeline task. */
+  --paper: #f3f6fb;
+  --surface: #ffffff;
+  --ink: #0b1f3a;
+  --ink-soft: #32455f;
+  --muted: #5b6c84;
+  --line: #d7dfeb;
+  --line-strong: #b4c2d6;
+  --blue: #1b5bd1; /* links, running */
+  --blue-wash: #e6eeff;
+  --green: #0c7a55; /* success */
+  --green-wash: #dff4ea;
+  --queued: #8a98ad;
+  --on-blue: #ffffff;
+  /* Medallion layers */
+  --bronze: #b46a2b;
+  --silver: #8492a6;
+  --gold: #c29200;
+
+  /* Type */
+  --font-sans: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "DejaVu Sans Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5625rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.625rem;
+  --text-4xl: 3.5rem;
+
+  /* Space and shape */
+  --page: 72rem;
+  --gutter: clamp(1.25rem, 4vw, 2.5rem);
+  --section: clamp(4rem, 9vw, 7rem);
+  --radius-s: 6px;
+  --radius-m: 10px;
+  --radius-l: 16px;
+
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --paper: #071229;
+  --surface: #0d1c3a;
+  --ink: #eaf1fb;
+  --ink-soft: #c5d3e8;
+  --muted: #94a8c6;
+  --line: #1c3055;
+  --line-strong: #2f4975;
+  --blue: #74acff;
+  --blue-wash: #12294f;
+  --green: #4fd39f;
+  --green-wash: #0f3330;
+  --queued: #6f84a6;
+  --on-blue: #06132b;
+  --bronze: #e09a5c;
+  --silver: #b7c4d6;
+  --gold: #f0c24a;
+
+  color-scheme: dark;
+}
