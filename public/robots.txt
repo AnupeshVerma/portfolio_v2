@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://anupeshportfolio.netlify.app/sitemap.xml
+Sitemap: https://anupeshverma.netlify.app/sitemap.xml

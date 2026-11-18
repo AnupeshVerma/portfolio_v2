@@ -2,7 +2,7 @@
 
 Portfolio site of Anupesh Kumar Verma, a data engineer building healthcare data pipelines. One fast page with a light and dark theme, no UI framework and no tracking.
 
-**Live site:** https://YOUR-SITE.netlify.app
+**Live site:** https://anupeshverma.netlify.app
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/screenshot-dark.png">
